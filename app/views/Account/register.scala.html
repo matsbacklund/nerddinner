@@ -22,7 +22,7 @@
                 @helper.inputText(form("username"), '_label -> "User name", 'placeholder -> "User name")
                 @helper.inputText(form("email"), '_label -> "Email address", 'placeholder -> "Email address")
                 @helper.inputPassword(form("password.main"), '_label -> "Password", 'placeholder -> "Password")
-                @helper.inputPassword(form("password.confirm"), '_label -> "Confirm password", 'placeholder -> "Confirm password")
+                @helper.inputPassword(form("password.confirm"), '_label -> "Confirm password", 'placeholder -> "Confirm password", '_error -> form.error("password"))
                 <p>
                     <input type="submit" value="Register" />
                 </p>

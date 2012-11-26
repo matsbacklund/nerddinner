@@ -3,6 +3,7 @@ package controllers
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.Logger
 
 /**
  * @author backlmat, 2012-11-26
@@ -11,12 +12,14 @@ case class User(username: String, email: String, password: String)
 
 object Account extends Controller {
 
+  val minPasswordLength = 6
+
   val registrationForm = Form(
     mapping (
       "username" -> nonEmptyText,
       "email" -> nonEmptyText,
       "password" -> tuple(
-        "main" -> nonEmptyText,
+        "main" -> nonEmptyText(minLength = minPasswordLength),
         "confirm" -> nonEmptyText
       ).verifying(
         "The password and confirmation password do not match.", password => password._1 == password._2
@@ -29,7 +32,7 @@ object Account extends Controller {
   }
 
   def index = Action {
-    Ok(views.html.Account.register(registrationForm))
+    Ok(views.html.Account.register(registrationForm, minPasswordLength))
   }
 
   def register = Action { implicit request =>
