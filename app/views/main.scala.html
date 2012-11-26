@@ -1,0 +1,49 @@
+@(title: String)(content: Html)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@title</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/Site.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
+    </head>
+    <body>
+        <div class="page">
+
+            <div id="header">
+                <div id="title">
+                    <h1>My MVC Application</h1>
+                </div>
+
+                <div id="logindisplay">
+                @Shared.logon()
+                @*
+                @Html.Partial("_LogOnPartial")
+                *@
+                </div>
+
+                <div id="menucontainer">
+
+                    <ul id="menu">
+                        <li><a href="@routes.Home.index()">Home</a></li>
+                        <li><a href="@routes.Home.about()">About</a></li>
+                        @*
+                        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                        <li>@Html.ActionLink("About", "About", "Home")</li>
+                        *@
+                    </ul>
+
+                </div>
+            </div>
+
+            <div id="main">
+                @content
+                <div id="footer">
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>

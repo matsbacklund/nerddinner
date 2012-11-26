@@ -1,0 +1,9 @@
+@(elements: helper.FieldElements)
+
+<div class="editor-label">
+    <label for="@elements.id">@elements.label</label>
+</div>
+<div class="editor-field">
+    @elements.input
+    <span class="field-validation-error">@elements.errors.mkString(", ")</span>
+</div>

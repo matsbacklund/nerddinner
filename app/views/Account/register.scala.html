@@ -1,0 +1,32 @@
+@(form: play.api.data.Form[User], passwordLength: Int = 6)
+@import helper.FieldConstructor
+
+@implicitField = @{ FieldConstructor(registration.f) }
+
+@main("Register") {
+    <h2>Create a New Account</h2>
+    <p>
+        Use the form below to create a new account.
+    </p>
+    <p>
+        Passwords are required to be a minimum of @passwordLength characters in length.
+    </p>
+
+    <script src="@routes.Assets.at("javascripts/jquery.validate.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("javascripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+
+    @helper.form(routes.Account.register()) {
+        <div>
+            <fieldset>
+                <legend>Account Information</legend>
+                @helper.inputText(form("username"), '_label -> "User name", 'placeholder -> "User name")
+                @helper.inputText(form("email"), '_label -> "Email address", 'placeholder -> "Email address")
+                @helper.inputPassword(form("password.main"), '_label -> "Password", 'placeholder -> "Password")
+                @helper.inputPassword(form("password.confirm"), '_label -> "Confirm password", 'placeholder -> "Confirm password")
+                <p>
+                    <input type="submit" value="Register" />
+                </p>
+            </fieldset>
+        </div>
+    }
+}
