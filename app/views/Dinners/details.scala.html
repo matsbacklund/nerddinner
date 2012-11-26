@@ -1,0 +1,31 @@
+@(dinner: Dinner)
+
+@main("Details") {
+    <h2>Details</h2>
+
+    <div>
+        <fieldset>
+            <legend>Account Information</legend>
+            <p>
+                DinnerID:
+                @dinner.id
+            </p>
+            <p>
+                Title:
+                @dinner.title
+            </p>
+            <p>
+                EventDate:
+                @dinner.eventDate
+            </p>
+            <p>
+                Description:
+                @dinner.description
+            </p>
+            <p>
+                HostedBy:
+                @dinner.hostedBy
+            </p>
+        </fieldset>
+    </div>
+}

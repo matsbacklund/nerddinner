@@ -1,0 +1,18 @@
+@(dinners: Seq[Dinner])
+
+@main("Dinners") {
+    <h2>Details</h2>
+
+    <div>
+        <fieldset>
+            <legend>Dinners Information</legend>
+            <ul>
+                @dinners.map { dinner =>
+                    <li>
+                        @dinner.title
+                    </li>
+                }
+            </ul>
+        </fieldset>
+    </div>
+}
