@@ -1,31 +1,44 @@
-@(dinner: Dinner)
+@(id: Long, dinner: Dinner)
+@import java.text.DateFormat
 
-@main("Details") {
-    <h2>Details</h2>
+@dateFormat(date: java.util.Date) = @{
+    val df = DateFormat.getDateInstance(DateFormat.SHORT)
+    df.format(date)
+}
 
-    <div>
-        <fieldset>
-            <legend>Account Information</legend>
-            <p>
-                DinnerID:
-                @dinner.id
-            </p>
-            <p>
-                Title:
-                @dinner.title
-            </p>
-            <p>
-                EventDate:
-                @dinner.eventDate
-            </p>
-            <p>
-                Description:
-                @dinner.description
-            </p>
-            <p>
-                HostedBy:
-                @dinner.hostedBy
-            </p>
-        </fieldset>
-    </div>
+@timeFormat(date: java.util.Date) = @{
+    val df = DateFormat.getTimeInstance(DateFormat.SHORT)
+    df.format(date)
+}
+
+@main("Dinner: " + dinner.title) {
+    <h2>@dinner.title</h2>
+
+    <p>
+        <strong>When:</strong>
+        @dateFormat(dinner.eventDate)
+
+        <strong>@@</strong>
+        @timeFormat(dinner.eventDate)
+    </p>
+    <p>
+        <strong>Where:</strong>
+        @dinner.address,
+        @dinner.country
+    </p>
+    <p>
+        <strong>Description:</strong>
+        @dinner.description
+    </p>
+    <p>
+        <strong>Origanizer:</strong>
+        @dinner.hostedBy
+        (@dinner.contactPhone)
+    </p>
+
+    <p>
+        <a href="@routes.Dinners.edit(id)">Edit Dinner</a> |
+        <a href="@routes.Dinners.index()">Delete Dinner</a>
+    </p>
+
 }

@@ -13,6 +13,8 @@ POST    /Account/register           controllers.Account.register
 # Dinners
 GET     /Dinners/index              controllers.Dinners.index
 GET     /Dinners/details/:id        controllers.Dinners.details(id: Long)
+GET     /Dinners/edit/:id           controllers.Dinners.edit(id: Long)
+POST    /Dinners/update/:id         controllers.Dinners.update(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

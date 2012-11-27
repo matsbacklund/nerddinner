@@ -4,6 +4,7 @@ import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.Logger
+import play.api.data.validation.Constraints._
 
 /**
  * @author backlmat, 2012-11-26
@@ -16,7 +17,7 @@ object Account extends Controller {
 
   val registrationForm = Form(
     mapping (
-      "username" -> nonEmptyText,
+      "username" -> text.verifying(pattern("""[0-9.+]+""".r, error="A valid phone number is required")),
       "email" -> nonEmptyText,
       "password" -> tuple(
         "main" -> nonEmptyText(minLength = minPasswordLength),

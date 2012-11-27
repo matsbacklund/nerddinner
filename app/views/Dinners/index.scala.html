@@ -1,18 +1,28 @@
 @(dinners: Seq[Dinner])
+@import java.text.DateFormat
 
-@main("Dinners") {
-    <h2>Details</h2>
+@dateFormat(date: java.util.Date) = @{
+    val df = DateFormat.getDateInstance(DateFormat.SHORT)
+    df.format(date)
+}
 
-    <div>
-        <fieldset>
-            <legend>Dinners Information</legend>
-            <ul>
-                @dinners.map { dinner =>
-                    <li>
-                        @dinner.title
-                    </li>
-                }
-            </ul>
-        </fieldset>
-    </div>
+@timeFormat(date: java.util.Date) = @{
+    val df = DateFormat.getTimeInstance(DateFormat.SHORT)
+    df.format(date)
+}
+
+@main("Upcoming Dinners") {
+    <h2>Upcoming Dinners</h2>
+
+    <ul>
+        @dinners.map { dinner =>
+            <li>
+                <a href="@routes.Dinners.details(dinner.id.get)">@dinner.title</a>
+                on
+                @dateFormat(dinner.eventDate)
+                @@
+                @timeFormat(dinner.eventDate)
+            </li>
+        }
+    </ul>
 }
