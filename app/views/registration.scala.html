@@ -5,5 +5,7 @@
 </div>
 <div class="editor-field">
     @elements.input
-    <span class="field-validation-error">@elements.errors.mkString(", ")</span>
+    @if(elements.hasErrors) {
+        <span class="field-validation-error" data-valmsg-for="@elements.label" data-valmsg-replace="false">*</span>
+    }
 </div>

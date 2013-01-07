@@ -10,18 +10,25 @@
     <script src="@routes.Assets.at("javascripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
 
     @helper.form(routes.Dinners.update(id)) {
+        @if(form.hasGlobalErrors){
+            <div class="validation-summary-errors" data-valmsg-summary="true">
+                <span>Please correct the errors and try again.</span>
+                <ul>
+                @form.globalError.map { error =>
+                    <li>@error.message</li>
+                }
+                </ul>
+            </div>
+        }
         <fieldset>
-            @form.globalError.map { error =>
-                <div>@error.message</div>
-            }
             @helper.inputText(form("title"), '_label -> "Dinner Title:")
             @helper.inputText(form("eventDate"), '_label -> "EventDate:")
             @helper.textarea(form("description"), '_label -> "Description:")
             @helper.inputText(form("address"), '_label -> "Address:")
             @helper.inputText(form("country"), '_label -> "Country:")
             @helper.inputText(form("contactPhone"), '_label -> "ContactPhone #:")
-            @helper.inputText(form("latitude"), '_label -> "Latitude:")
-            @helper.inputText(form("longitude"), '_label -> "Longitude:")
+            @helper.inputText(form("latitude"), '_label -> "Latitude:", '_error -> "The field Latitude must be a number.")
+            @helper.inputText(form("longitude"), '_label -> "Longitude:", '_error -> "The field Longitude must be a number.")
             <p>
                 <input type="submit" value="Save"/>
             </p>

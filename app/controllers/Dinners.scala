@@ -24,7 +24,7 @@ object Dinners extends Controller {
 
   val dinnerForm = Form(
     mapping (
-      "title" -> nonEmptyText,
+      "title" -> nonEmptyText.verifying(error => "Title required"),
       "eventDate" -> date(datePattern),
       "description" -> nonEmptyText,
       "address" -> nonEmptyText,
@@ -38,7 +38,7 @@ object Dinners extends Controller {
      )
      ((dinner: Dinner) => Option(dinner.title, dinner.eventDate, dinner.description, dinner.address,
                                  dinner.country, dinner.contactPhone, dinner.latitude, dinner.longitude)
-     ).verifying("Could not xxx", x => PhoneValidator.isValidNumber(x.contactPhone, x.country))
+     ).verifying("Phone# does not match country", x => PhoneValidator.isValidNumber(x.contactPhone, x.country))
   )
 
   def index = Action {
@@ -89,5 +89,5 @@ object PhoneValidator {
     }
   }
 
-  def countries = countryRegex.keys
+  val countries = countryRegex.keys
 }

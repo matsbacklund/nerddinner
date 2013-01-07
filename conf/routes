@@ -11,6 +11,7 @@ GET     /Account/index              controllers.Account.index
 POST    /Account/register           controllers.Account.register
 
 # Dinners
+GET     /Dinners                    controllers.Dinners.index
 GET     /Dinners/index              controllers.Dinners.index
 GET     /Dinners/details/:id        controllers.Dinners.details(id: Long)
 GET     /Dinners/edit/:id           controllers.Dinners.edit(id: Long)
