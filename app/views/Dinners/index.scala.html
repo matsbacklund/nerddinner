@@ -1,4 +1,4 @@
-@(dinners: Seq[Dinner])
+@(dinners: Seq[Dinner])(implicit user: Option[User] = None)
 @import java.text.DateFormat
 
 @dateFormat(date: java.util.Date) = @{

@@ -1,0 +1,12 @@
+@(userForm: Form[User], message: String)
+
+@if(userForm.hasErrors) {
+    <div class="validation-summary-errors">
+        <span>@message</span>
+        <ul>
+        @userForm.errors.map { error =>
+            <li>@Messages(error.message)</li>
+        }
+        </ul>
+    </div>
+}

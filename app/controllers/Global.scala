@@ -22,9 +22,9 @@ object Global {
   }
 
   /**
-   * Helper for formatters binders
+   * Helper for formatter binders
    * @param parse Function parsing a String value into a T value, throwing an exception in case of failure
-   * @param error Error to set in case of parsing failure
+   * @param errMsg Error to set in case of parsing failure
    * @param key Key name of the field to parse
    * @param data Field data
    */

@@ -1,4 +1,4 @@
-@(id: Long, dinner: Dinner)
+@(id: Long, dinner: Dinner)(implicit user: Option[User] = None)
 @import java.text.DateFormat
 
 @dateFormat(date: java.util.Date) = @{

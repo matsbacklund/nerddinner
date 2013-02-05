@@ -5,13 +5,13 @@ import play.api.mvc.{Action, Controller}
 /**
  * @author backlmat, 2012-11-26
  */
-object Home  extends Controller {
+object Home extends Controller with Secured {
 
-  def index = Action {
-    Ok(views.html.Home.index("Welcome to ASP.NET MVC!"))
+  def index = Action { implicit request =>
+    Ok(views.html.Home.index("Welcome to Play!"))
   }
 
-  def about = Action {
+  def about = Action { implicit request =>
     Ok(views.html.Home.about())
   }
 }

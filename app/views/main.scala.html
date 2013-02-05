@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String)(content: Html)(implicit user: Option[User])
 
 <!DOCTYPE html>
 
@@ -19,9 +19,6 @@
 
                 <div id="logindisplay">
                 @Shared.logon()
-                @*
-                @Html.Partial("_LogOnPartial")
-                *@
                 </div>
 
                 <div id="menucontainer">
@@ -29,10 +26,6 @@
                     <ul id="menu">
                         <li><a href="@routes.Home.index()">Home</a></li>
                         <li><a href="@routes.Home.about()">About</a></li>
-                        @*
-                        <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                        <li>@Html.ActionLink("About", "About", "Home")</li>
-                        *@
                     </ul>
 
                 </div>

@@ -7,7 +7,10 @@ GET     /                           controllers.Home.index
 GET     /about                      controllers.Home.about
 
 # Account page
-GET     /Account/index              controllers.Account.index
+GET     /Account/logon              controllers.Account.logon
+POST    /Account/logon              controllers.Account.authenticate
+GET     /Account/logoff             controllers.Account.logoff
+GET     /Account/register           controllers.Account.registration
 POST    /Account/register           controllers.Account.register
 
 # Dinners

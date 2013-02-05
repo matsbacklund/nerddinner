@@ -1,4 +1,4 @@
-@(id: Long, form: play.api.data.Form[Dinner])
+@(id: Long, form: play.api.data.Form[Dinner])(implicit user: Option[User] = None)
 @import helper.FieldConstructor
 
 @implicitField = @{ FieldConstructor(registration.f) }

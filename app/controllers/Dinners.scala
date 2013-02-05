@@ -4,15 +4,13 @@ import play.api.mvc._
 import models.Dinner
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.data.validation.Constraints._
 import anorm.NotAssigned
 import java.text.{SimpleDateFormat, DateFormat}
-import util.matching.Regex
 
 /**
  * @author mats, 2012-11-26
  */
-object Dinners extends Controller {
+object Dinners extends Controller with Secured {
 
   val datePattern = {
     val df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
@@ -24,12 +22,12 @@ object Dinners extends Controller {
 
   val dinnerForm = Form(
     mapping (
-      "title" -> nonEmptyText.verifying(error => "Title required"),
+      "title" -> text.verifying("Title required", {!_.isEmpty}),
       "eventDate" -> date(datePattern),
-      "description" -> nonEmptyText,
-      "address" -> nonEmptyText,
-      "country" -> nonEmptyText,
-      "contactPhone" -> nonEmptyText,
+      "description" -> text.verifying("Description required", {!_.isEmpty}),
+      "address" -> text.verifying("Address required", {!_.isEmpty}),
+      "country" -> text.verifying("Country required", {!_.isEmpty}),
+      "contactPhone" -> text.verifying("Phone# required", {!_.isEmpty}),
       "latitude" -> of(Global.doubleFormat),
       "longitude" -> of(Global.doubleFormat)
     )(
@@ -41,18 +39,18 @@ object Dinners extends Controller {
      ).verifying("Phone# does not match country", x => PhoneValidator.isValidNumber(x.contactPhone, x.country))
   )
 
-  def index = Action {
+  def index = Action { implicit request =>
     val dinners = Dinner.findUpcomingDinners()
     Ok(views.html.Dinners.index(dinners))
   }
 
-  def details(id: Long) = Action {
+  def details(id: Long) = Action { implicit request =>
     Dinner.findById(id).map { dinner =>
       Ok(views.html.Dinners.details(id, dinner))
     }.getOrElse(Ok(views.html.Dinners.notFound()))
   }
 
-  def edit(id: Long) = Action {
+  def edit(id: Long) = Action { implicit request =>
     Dinner.findById(id).map { dinner =>
       Ok(views.html.Dinners.edit(id, dinnerForm.fill(dinner)))
     }.getOrElse(Ok(views.html.Dinners.notFound()))
