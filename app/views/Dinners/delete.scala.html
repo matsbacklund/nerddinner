@@ -1,0 +1,21 @@
+@(id: Long, dinner: Dinner)(implicit user: Option[User] = None)
+@import helper.FieldConstructor
+
+@implicitField = @{ FieldConstructor(registration.f) }
+
+@main("Delete Confirmation: " + dinner.title) {
+
+    <h2>
+        Delete Confirmation
+    </h2>
+
+    <div>
+        <p>Please confirm you want to cancel the dinner titled:
+            <i> @dinner.title </i>
+        </p>
+    </div>
+
+    @helper.form(routes.Dinners.remove(id)) {
+        <input name="confirmButton" type="submit" value="Delete" />
+    }
+}

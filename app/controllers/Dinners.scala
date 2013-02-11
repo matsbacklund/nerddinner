@@ -5,7 +5,8 @@ import models.Dinner
 import play.api.data.Form
 import play.api.data.Forms._
 import anorm.NotAssigned
-import java.text.{SimpleDateFormat, DateFormat}
+import java.text.{ParsePosition, FieldPosition, SimpleDateFormat, DateFormat}
+import java.util.{Calendar, Date}
 
 /**
  * @author mats, 2012-11-26
@@ -52,19 +53,55 @@ object Dinners extends Controller with Secured {
 
   def edit(id: Long) = Action { implicit request =>
     Dinner.findById(id).map { dinner =>
-      Ok(views.html.Dinners.edit(id, dinnerForm.fill(dinner)))
+      Ok(views.html.Dinners.edit(id, dinnerForm.fill(dinner), countries))
     }.getOrElse(Ok(views.html.Dinners.notFound()))
   }
 
   def update(id: Long) = Action { implicit request =>
     dinnerForm.bindFromRequest().fold(
-      formWithErrors => BadRequest(views.html.Dinners.edit(id, formWithErrors)),
+      formWithErrors => BadRequest(views.html.Dinners.edit(id, formWithErrors, countries)),
       dinner => {
         Dinner.update(id, dinner)
         Ok(views.html.Dinners.details(id, dinner))
       }
     )
   }
+
+  def create = Action { implicit request =>
+
+    val cal = Calendar.getInstance()
+    cal.setTime(new Date())
+    cal.add(Calendar.DATE, 7)
+    val date = cal.getTime
+
+    val dinner = Dinner(NotAssigned, "", date, "", "", "", "", "", 0, 0)
+    Ok(views.html.Dinners.create(dinnerForm.fill(dinner), countries))
+  }
+
+  def insert = Action { implicit request =>
+    dinnerForm.bindFromRequest().fold(
+      formWithErrors => BadRequest(views.html.Dinners.create(formWithErrors, countries)),
+      dinner => {
+        val d = Dinner.add(dinner)
+        Redirect(routes.Dinners.details(d.id.get))
+      }
+    )
+  }
+
+  def delete(id: Long) = Action { implicit request =>
+    Dinner.findById(id).map { dinner =>
+      Ok(views.html.Dinners.delete(id, dinner))
+    }.getOrElse(Ok(views.html.Dinners.notFound()))
+  }
+
+  def remove(id: Long) = Action { implicit request =>
+    Dinner.findById(id).map { dinner =>
+      Dinner.delete(dinner)
+      Ok(views.html.Dinners.deleted())
+    }.getOrElse(Ok(views.html.Dinners.notFound()))
+  }
+
+  val countries = PhoneValidator.countries.toList
 }
 
 object PhoneValidator {

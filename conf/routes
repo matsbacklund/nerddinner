@@ -19,6 +19,10 @@ GET     /Dinners/index              controllers.Dinners.index
 GET     /Dinners/details/:id        controllers.Dinners.details(id: Long)
 GET     /Dinners/edit/:id           controllers.Dinners.edit(id: Long)
 POST    /Dinners/update/:id         controllers.Dinners.update(id: Long)
+GET     /Dinners/create             controllers.Dinners.create
+POST    /Dinners/insert             controllers.Dinners.insert
+GET     /Dinners/delete/:id         controllers.Dinners.delete(id: Long)
+POST    /Dinners/remove/:id         controllers.Dinners.remove(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

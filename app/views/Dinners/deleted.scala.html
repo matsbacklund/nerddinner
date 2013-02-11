@@ -1,0 +1,17 @@
+@()(implicit user: Option[User] = None)
+@import helper.FieldConstructor
+
+@implicitField = @{ FieldConstructor(registration.f) }
+
+@main("Dinner Deleted") {
+
+    <h2>Dinner Deleted</h2>
+
+    <div>
+        <p>Your dinner was successfully deleted.</p>
+    </div>
+
+    <div>
+        <p><a href="@routes.Dinners.index()">Click for Upcoming Dinners</a></p>
+    </div>
+}

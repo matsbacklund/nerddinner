@@ -48,9 +48,9 @@ object Dinner {
     }
   }
 
-  def add(dinner: Dinner) {
+  def add(dinner: Dinner): Dinner = {
     DB.withConnection { implicit connection =>
-      SQL("""INSERT INTO Dinner(Title, EventDate, Description, HostedBy, ContactPhone, Address, Country, Latitude, Longitude)
+      val id: Option[Long] = SQL("""INSERT INTO Dinner(Title, EventDate, Description, HostedBy, ContactPhone, Address, Country, Latitude, Longitude)
                  VALUES({title}, {eventDate}, {description}, {hostedBy}, {contactPhone}, {address}, {country}, {latitude}, {longitude})
           """
       ).on(
@@ -63,7 +63,8 @@ object Dinner {
         'country -> dinner.country,
         'latitude -> dinner.latitude,
         'longitude -> dinner.longitude
-      ).executeUpdate()
+      ).executeInsert()
+      dinner.copy(id = Id(id.get))
     }
   }
 

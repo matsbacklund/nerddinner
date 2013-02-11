@@ -1,22 +1,22 @@
-@(id: Long, form: play.api.data.Form[Dinner], countries: List[String])(implicit user: Option[User] = None)
+@(form: play.api.data.Form[Dinner], countries: List[String])(implicit user: Option[User] = None)
 @import helper.FieldConstructor
 
 @implicitField = @{ FieldConstructor(registration.f) }
 
-@main("Edit Dinner") {
-    <h2>Edit Dinner</h2>
+@main("Host a Dinner") {
+    <h2>Host a Dinner</h2>
 
     <script src="@routes.Assets.at("javascripts/jquery.validate.min.js")" type="text/javascript"></script>
     <script src="@routes.Assets.at("javascripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
 
-    @helper.form(routes.Dinners.update(id)) {
+    @helper.form(routes.Dinners.insert()) {
         @if(form.hasGlobalErrors){
             <div class="validation-summary-errors" data-valmsg-summary="true">
                 <span>Please correct the errors and try again.</span>
                 <ul>
-                @form.globalError.map { error =>
-                    <li>@error.message</li>
-                }
+                    @form.globalError.map { error =>
+                        <li>@error.message</li>
+                    }
                 </ul>
             </div>
         }
