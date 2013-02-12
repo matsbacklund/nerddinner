@@ -81,7 +81,7 @@ object Dinner {
   }
 
   def add(dinner: Dinner): Dinner = {
-    DB.withConnection { implicit connection =>
+    DB.withTransaction { implicit connection =>
       val id: Option[Long] = SQL("""INSERT INTO Dinner(Title, EventDate, Description, HostedBy, ContactPhone, Address, Country, Latitude, Longitude)
                  VALUES({title}, {eventDate}, {description}, {hostedBy}, {contactPhone}, {address}, {country}, {latitude}, {longitude})
           """
@@ -96,6 +96,16 @@ object Dinner {
         'latitude -> dinner.latitude,
         'longitude -> dinner.longitude
       ).executeInsert()
+
+      SQL(
+        """
+          INSERT INTO Rsvp(DinnerId, AttendeeName) VALUES({dinnerId}, {attendeeName})
+        """
+      ).on(
+        'dinnerId -> id.get,
+        'attendeeName -> dinner.hostedBy
+      ).executeUpdate()
+
       dinner.copy(id = Id(id.get))
     }
   }
@@ -131,6 +141,22 @@ object Dinner {
         'latitude -> dinner.latitude,
         'longitude -> dinner.longitude
       ).executeUpdate()
+    }
+  }
+
+  def isHostedBy(dinnerId: Long, username: String): Boolean = {
+    DB.withConnection { implicit connection =>
+      SQL(
+        """
+          SELECT COUNT(dinner.hostedBy) = 1 from Dinner dinner
+          WHERE dinner.DinnerId = {dinnerId} and dinner.hostedBy = {username}
+        """
+      ).on(
+        'dinnerId -> dinnerId,
+        'username -> username
+      ).as(
+        scalar[Boolean].single
+      )
     }
   }
 }

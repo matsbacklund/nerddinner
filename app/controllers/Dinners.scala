@@ -45,7 +45,7 @@ object Dinners extends Controller with Secured {
   /**
    * Handle default path requests, redirect to dinners list
    */
-  def index = Action {
+  def index = Action { implicit request =>
     Redirect(routes.Dinners.page(0))
   }
 
@@ -59,24 +59,37 @@ object Dinners extends Controller with Secured {
     }.getOrElse(Ok(views.html.Dinners.notFound()))
   }
 
-  def edit(id: Long) = Action { implicit request =>
+  def edit(id: Long) = IsAuthenticated { username => implicit request =>
     Dinner.findById(id).map { dinner =>
-      Ok(views.html.Dinners.edit(id, dinnerForm.fill(dinner), countries))
+      Dinner.isHostedBy(id, username) match {
+        case true => {
+          Ok(views.html.Dinners.edit(id, dinnerForm.fill(dinner), countries))
+        }
+        case false => {
+          Ok(views.html.Dinners.invalidOwner())
+        }
+      }
     }.getOrElse(Ok(views.html.Dinners.notFound()))
   }
 
-  def update(id: Long) = Action { implicit request =>
-    dinnerForm.bindFromRequest().fold(
-      formWithErrors => BadRequest(views.html.Dinners.edit(id, formWithErrors, countries)),
-      dinner => {
-        Dinner.update(id, dinner)
-        Ok(views.html.Dinners.details(id, dinner))
+  def update(id: Long) = IsAuthenticated { username => implicit request =>
+    Dinner.isHostedBy(id, username) match {
+      case true => {
+        dinnerForm.bindFromRequest().fold(
+          formWithErrors => BadRequest(views.html.Dinners.edit(id, formWithErrors, countries)),
+          dinner => {
+            Dinner.update(id, dinner)
+            Ok(views.html.Dinners.details(id, dinner))
+          }
+        )
       }
-    )
+      case false => {
+        Ok(views.html.Dinners.invalidOwner())
+      }
+    }
   }
 
-  def create = Action { implicit request =>
-
+  def create = IsAuthenticated { _ => implicit request =>
     val cal = Calendar.getInstance()
     cal.setTime(new Date())
     cal.add(Calendar.DATE, 7)
@@ -86,11 +99,12 @@ object Dinners extends Controller with Secured {
     Ok(views.html.Dinners.create(dinnerForm.fill(dinner), countries))
   }
 
-  def insert = Action { implicit request =>
+  def insert = IsAuthenticated { username => implicit request =>
     dinnerForm.bindFromRequest().fold(
       formWithErrors => BadRequest(views.html.Dinners.create(formWithErrors, countries)),
       dinner => {
-        val d = Dinner.add(dinner)
+        val dinnerWithHost = dinner.copy(hostedBy = username)
+        val d = Dinner.add(dinnerWithHost)
         Redirect(routes.Dinners.details(d.id.get))
       }
     )

@@ -58,7 +58,7 @@ object Account extends Controller {
     )
   }
 
-  def registration = Action {
+  def registration = Action { implicit request =>
     Ok(views.html.Account.register(registrationForm, minPasswordLength))
   }
 
@@ -67,7 +67,7 @@ object Account extends Controller {
       formWithErrors => BadRequest(views.html.Account.register(formWithErrors)),
       user => {
         User.create(user)
-        Redirect(routes.Home.index())
+        Redirect(routes.Account.logon())
       }
     )
   }

@@ -36,9 +36,13 @@
         (@dinner.contactPhone)
     </p>
 
-    <p>
-        <a href="@routes.Dinners.edit(id)">Edit Dinner</a> |
-        <a href="@routes.Dinners.delete(id)">Delete Dinner</a>
-    </p>
+    @user.map { user =>
+        @if(Dinner.isHostedBy(id, user.username)) {
+            <p>
+                <a href="@routes.Dinners.edit(id)">Edit Dinner</a> |
+                <a href="@routes.Dinners.delete(id)">Delete Dinner</a>
+            </p>
+        }
+    }
 
 }
