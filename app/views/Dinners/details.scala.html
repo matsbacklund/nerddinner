@@ -12,47 +12,54 @@
 }
 
 @main("Dinner: " + dinner.title) {
-    <h2>@dinner.title</h2>
 
-    <p>
-        <strong>When:</strong>
-        @dateFormat(dinner.eventDate)
+    <div id="dinnerDiv">
+        <h2>@dinner.title</h2>
 
-        <strong>@@</strong>
-        @timeFormat(dinner.eventDate)
-    </p>
-    <p>
-        <strong>Where:</strong>
-        @dinner.address,
-        @dinner.country
-    </p>
-    <p>
-        <strong>Description:</strong>
-        @dinner.description
-    </p>
-    <p>
-        <strong>Origanizer:</strong>
-        @dinner.hostedBy
-        (@dinner.contactPhone)
-    </p>
+        <p>
+            <strong>When:</strong>
+            @dateFormat(dinner.eventDate)
 
-    <div id="rsvpmsg">
-        @user.map { user =>
-            @if(Dinner.isHostedBy(id, user.username)) {
-                <p>
-                    <a href="@routes.Dinners.edit(id)">Edit Dinner</a> |
-                    <a href="@routes.Dinners.delete(id)">Delete Dinner</a>
-                </p>
-            } else {
-                @if(Dinner.isUserRegistered(id, user.username)) {
-                    <p>You are registered for this event!</p>
+            <strong>@@</strong>
+            @timeFormat(dinner.eventDate)
+        </p>
+        <p>
+            <strong>Where:</strong>
+            @dinner.address,
+            @dinner.country
+        </p>
+        <p>
+            <strong>Description:</strong>
+            @dinner.description
+        </p>
+        <p>
+            <strong>Origanizer:</strong>
+            @dinner.hostedBy
+            (@dinner.contactPhone)
+        </p>
+
+        <div id="rsvpmsg">
+            @user.map { user =>
+                @if(Dinner.isHostedBy(id, user.username)) {
+                    <p>
+                        <a href="@routes.Dinners.edit(id)">Edit Dinner</a> |
+                        <a href="@routes.Dinners.delete(id)">Delete Dinner</a>
+                    </p>
                 } else {
-                    <a href="#" id="rsvplink">RSVP for this event</a>
+                    @if(Dinner.isUserRegistered(id, user.username)) {
+                        <p>You are registered for this event!</p>
+                    } else {
+                        <a href="#" id="rsvplink">RSVP for this event</a>
+                    }
                 }
+            }.getOrElse {
+                <a href="@routes.Account.logon()">Logon</a> to RSVP for this event.
             }
-        }.getOrElse {
-            <a href="@routes.Account.logon()">Logon</a> to RSVP for this event.
-        }
+        </div>
+    </div>
+
+    <div id="mapDiv">
+        @views.html.Dinners.map(dinner)
     </div>
 
     <script type="text/javascript">

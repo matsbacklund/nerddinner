@@ -343,3 +343,48 @@ div#title
 {
     width: 6em;
 }
+
+#mapDiv
+{
+    float: right;
+    width: 522px;
+}
+
+#theMap
+{
+    position: relative;
+    width: 580px;
+    border: solid 1px #bbd1ec;
+}
+
+/*
+#dinnerDiv
+{
+    width:300px;
+    float:left;
+}
+
+#mapDiv
+{
+    width:500px;
+    float:right;
+    overflow:hidden;
+    position:relative;
+}
+#mapDivLeft
+{
+    width:600px;
+    float:left;
+    overflow:hidden;
+    position:relative;
+}
+#mapDivLeft #theMap
+{
+    position:relative
+}
+#mapDivRight
+{
+    width:300px;
+    float:left;
+}
+*/
