@@ -36,13 +36,35 @@
         (@dinner.contactPhone)
     </p>
 
-    @user.map { user =>
-        @if(Dinner.isHostedBy(id, user.username)) {
-            <p>
-                <a href="@routes.Dinners.edit(id)">Edit Dinner</a> |
-                <a href="@routes.Dinners.delete(id)">Delete Dinner</a>
-            </p>
+    <div id="rsvpmsg">
+        @user.map { user =>
+            @if(Dinner.isHostedBy(id, user.username)) {
+                <p>
+                    <a href="@routes.Dinners.edit(id)">Edit Dinner</a> |
+                    <a href="@routes.Dinners.delete(id)">Delete Dinner</a>
+                </p>
+            } else {
+                @if(Dinner.isUserRegistered(id, user.username)) {
+                    <p>You are registered for this event!</p>
+                } else {
+                    <a href="#" id="rsvplink">RSVP for this event</a>
+                }
+            }
+        }.getOrElse {
+            <a href="@routes.Account.logon()">Logon</a> to RSVP for this event.
         }
-    }
+    </div>
 
+    <script type="text/javascript">
+        $(function() {
+            $('a#rsvplink').click(function(e) {
+                e.preventDefault();
+                jsRoutes.controllers.Rsvps.register(@id).ajax({
+                    success: function(data) {
+                        $('div#rsvpmsg').html(data).animate({fontSize: "1.5em"},400);
+                    }
+                });
+            });
+        });
+    </script>
 }

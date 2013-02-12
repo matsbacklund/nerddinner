@@ -79,7 +79,7 @@ object Dinners extends Controller with Secured {
           formWithErrors => BadRequest(views.html.Dinners.edit(id, formWithErrors, countries)),
           dinner => {
             Dinner.update(id, dinner)
-            Ok(views.html.Dinners.details(id, dinner))
+            Redirect(routes.Dinners.details(id))
           }
         )
       }

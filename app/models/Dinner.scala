@@ -144,12 +144,38 @@ object Dinner {
     }
   }
 
+  def addUser(dinnerId: Long, username: String) {
+    DB.withConnection { implicit connection =>
+      SQL("INSERT INTO Rsvp(DinnerId, AttendeeName) VALUES({dinnerId}, {username})").on(
+        'dinnerId -> dinnerId,
+        'username -> username
+      ).executeUpdate()
+    }
+  }
+
   def isHostedBy(dinnerId: Long, username: String): Boolean = {
     DB.withConnection { implicit connection =>
       SQL(
         """
           SELECT COUNT(dinner.hostedBy) = 1 from Dinner dinner
           WHERE dinner.DinnerId = {dinnerId} and dinner.hostedBy = {username}
+        """
+      ).on(
+        'dinnerId -> dinnerId,
+        'username -> username
+      ).as(
+        scalar[Boolean].single
+      )
+    }
+  }
+
+  def isUserRegistered(dinnerId: Long, username: String): Boolean = {
+    DB.withConnection { implicit connection =>
+      SQL(
+        """
+          SELECT COUNT(rsvp.AttendeeName) = 1 from Rsvp rsvp
+          JOIN Dinner dinner ON dinner.DinnerId = rsvp.DinnerId
+          WHERE dinner.DinnerId = {dinnerId} and rsvp.AttendeeName = {username}
         """
       ).on(
         'dinnerId -> dinnerId,

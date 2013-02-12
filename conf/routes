@@ -24,6 +24,10 @@ GET     /Dinners/create             controllers.Dinners.create
 POST    /Dinners/insert             controllers.Dinners.insert
 GET     /Dinners/delete/:id         controllers.Dinners.delete(id: Long)
 POST    /Dinners/remove/:id         controllers.Dinners.remove(id: Long)
+POST    /Dinners/rsvp/:id           controllers.Rsvps.register(id: Long)
+
+# Javascript routing
+GET     /assets/javascripts/routes  controllers.Home.javascriptRoutes
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
