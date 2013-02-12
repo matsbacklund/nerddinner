@@ -14,16 +14,42 @@
     </div>
 }
 <fieldset>
-    @helper.inputText(form("title"), '_label -> "Dinner Title:")
-    @helper.inputText(form("eventDate"), '_label -> "EventDate:")
-    @helper.textarea(form("description"), '_label -> "Description:")
-    @helper.inputText(form("address"), '_label -> "Address:")
-    @helper.select(form("country"), helper.options(countries), '_label -> "Country:")
-    @helper.inputText(form("contactPhone"), '_label -> "ContactPhone #:")
-    @helper.inputText(form("latitude"), '_label -> "Latitude:", '_error -> "The field Latitude must be a number.")
-    @helper.inputText(form("longitude"), '_label -> "Longitude:", '_error -> "The field Longitude must be a number.")
-    <p>
-        <input type="submit" value="Save"/>
-    </p>
+
+    <div id="dinnerDiv">
+        @helper.inputText(form("title"), '_label -> "Dinner Title:")
+        @helper.inputText(form("eventDate"), '_label -> "EventDate:")
+        @helper.textarea(form("description"), '_label -> "Description:")
+        @helper.inputText(form("address"), '_label -> "Address:")
+        @helper.select(form("country"), helper.options(countries), '_label -> "Country:")
+        @helper.inputText(form("contactPhone"), '_label -> "ContactPhone #:")
+        @helper.inputText(form("latitude"), '_label -> "Latitude:", '_error -> "The field Latitude must be a number.")
+        @helper.inputText(form("longitude"), '_label -> "Longitude:", '_error -> "The field Longitude must be a number.")
+        <p>
+            <input type="submit" value="Save"/>
+        </p>
+    </div>
+
+    <div id="mapDiv">
+        @views.html.Dinners.map(form.get)
+    </div>
+
 </fieldset>
+
+<script type="text/javascript">
+
+    $(function() {
+        $("#Address").blur(function(evt) {
+            $("#Latitude").val("");
+            $("#Longitude").val("");
+
+            var address = jQuery.trim($("#Address").val());
+            if (address.length < 1)
+                return;
+
+            FindAddressOnMap(address);
+        });
+    });
+
+</script>
+
 
