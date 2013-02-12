@@ -42,6 +42,38 @@ object Dinner {
     }
   }
 
+  def listUpcomingDinners(page: Int = 0, pageSize: Int = 10): Page[Dinner] = {
+    val offset = pageSize * (page)
+    val now = new Date()
+    DB.withConnection { implicit connection =>
+      val dinners = SQL(
+        """
+          SELECT * FROM Dinner
+          WHERE EventDate > {now}
+          ORDER BY EventDate
+          LIMIT {pageSize} OFFSET {offset}
+        """
+      ).on(
+        'now -> now,
+        'pageSize -> pageSize,
+        'offset -> offset
+      ).as(
+        Dinner.simple *
+      )
+
+      val totalRows = SQL(
+        """
+          SELECT COUNT(*) FROM Dinner
+          WHERE EventDate > {now}
+        """
+      ).on(
+        'now -> now
+      ).as(scalar[Long].single)
+
+      Page(dinners, page, offset, totalRows)
+    }
+  }
+
   def findById(id: Long) = {
     DB.withConnection { implicit connection =>
       SQL("SELECT * FROM Dinner WHERE DinnerId={id}").on('id -> id).as(Dinner.simple.singleOpt)

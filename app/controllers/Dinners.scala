@@ -35,14 +35,22 @@ object Dinners extends Controller with Secured {
       (title, eventDate, description, address, country, contactPhone, latitude, longitude) =>
         Dinner(NotAssigned, title, eventDate, description, "", contactPhone, address, country, latitude, longitude)
      )
-     ((dinner: Dinner) => Option(dinner.title, dinner.eventDate, dinner.description, dinner.address,
-                                 dinner.country, dinner.contactPhone, dinner.latitude, dinner.longitude)
+     (
+       (dinner: Dinner) =>
+         Option(dinner.title, dinner.eventDate, dinner.description, dinner.address,
+                dinner.country, dinner.contactPhone, dinner.latitude, dinner.longitude)
      ).verifying("Phone# does not match country", x => PhoneValidator.isValidNumber(x.contactPhone, x.country))
   )
 
-  def index = Action { implicit request =>
-    val dinners = Dinner.findUpcomingDinners()
-    Ok(views.html.Dinners.index(dinners))
+  /**
+   * Handle default path requests, redirect to dinners list
+   */
+  def index = Action {
+    Redirect(routes.Dinners.page(0))
+  }
+
+  def page(page: Int) = Action { implicit request =>
+    Ok(views.html.Dinners.index(Dinner.listUpcomingDinners(page)))
   }
 
   def details(id: Long) = Action { implicit request =>
