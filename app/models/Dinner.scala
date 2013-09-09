@@ -2,89 +2,132 @@ package models
 
 import anorm._
 import anorm.SqlParser._
-import play.api.db._
-import play.api.Play.current
 import java.util.Date
+import play.api.db.DB
+import play.api.Play.current
+import scala.collection.mutable.ListBuffer
 
 /**
- * @author mats, 2012-11-26
+ * @author maba, 2013-08-15
  */
-case class Dinner(id: Pk[Long], title: String, eventDate: Date, description: String, hostedBy: String,
-                  contactPhone: String, address: String, country: String, latitude: Double, longitude: Double)
+case class Dinner(
+                   id: Pk[Long],
+                   title: String,
+                   eventDate: Date,
+                   description: String,
+                   hostedBy: String,
+                   contactPhone: String,
+                   address: String,
+                   country: String,
+                   latitude: Double,
+                   longitude: Double
+                   ) {
+
+  def isValid = {
+    ruleViolations.isEmpty
+  }
+
+  def ruleViolations = {
+    val violations = new ListBuffer[RuleViolation]
+    if (title == null || title.isEmpty) {
+      violations += RuleViolation("Title Required", "title")
+    }
+    if (description == null || description.isEmpty) {
+      violations += RuleViolation("Description Required", "description")
+    }
+    if (hostedBy == null || hostedBy.isEmpty) {
+      violations += RuleViolation("Hosted By Required", "hostedBy")
+    }
+    if (address == null || address.isEmpty) {
+      violations += RuleViolation("Address Required", "address")
+    }
+    if (country == null || country.isEmpty) {
+      violations += RuleViolation("Country Required", "country")
+    }
+    if (contactPhone == null || contactPhone.isEmpty) {
+      violations += RuleViolation("Contact Phone Required", "contactPhone")
+    }
+    if (!PhoneValidator.isValidNumber(contactPhone, country)) {
+      violations += RuleViolation("Phone# does not match country", "contactPhone")
+    }
+    violations.toList
+  }
+}
 
 object Dinner {
-
-  val simple = {
-    get[Pk[Long]]("DinnerId") ~
-    get[String]("Title") ~
-    get[Date]("EventDate") ~
-    get[String]("Description") ~
-    get[String]("HostedBy") ~
-    get[String]("ContactPhone") ~
-    get[String]("Address") ~
-    get[String]("Country") ~
-    get[Double]("Latitude") ~
-    get[Double]("Longitude") map {
-      case id~title~eventDate~description~hostedBy~contactPhone~address~country~latitude~longitude =>
+  val parser = {
+    get[Pk[Long]]("id") ~
+    get[String]("title") ~
+    get[Date]("event_date") ~
+    get[String]("description") ~
+    get[String]("hosted_by") ~
+    get[String]("contact_phone") ~
+    get[String]("address") ~
+    get[String]("country") ~
+    get[Double]("latitude") ~
+    get[Double]("longitude") map {
+      case id~title~eventDate~description~hostedBy~contactPhone~address~country~latitude~longitude => {
         Dinner(id, title, eventDate, description, hostedBy, contactPhone, address, country, latitude, longitude)
+      }
     }
   }
 
-  def findAllDinners(): Seq[Dinner] = {
-    DB.withConnection { implicit connection =>
-      SQL("SELECT * FROM DINNER").as(Dinner.simple *)
-    }
-  }
+  //
+  // Query Methods
 
-  def findUpcomingDinners(): Seq[Dinner] = {
+  def findAll(): Seq[Dinner] = {
     DB.withConnection { implicit connection =>
-      SQL("SELECT * FROM Dinner WHERE EventDate > {now} ORDER BY EventDate").on('now -> new Date()).as(Dinner.simple *)
-    }
-  }
-
-  def listUpcomingDinners(page: Int = 0, pageSize: Int = 10): Page[Dinner] = {
-    val offset = pageSize * (page)
-    val now = new Date()
-    DB.withConnection { implicit connection =>
-      val dinners = SQL(
+      SQL(
         """
-          SELECT * FROM Dinner
-          WHERE EventDate > {now}
-          ORDER BY EventDate
-          LIMIT {pageSize} OFFSET {offset}
+          SELECT * FROM dinners
         """
-      ).on(
-        'now -> now,
-        'pageSize -> pageSize,
-        'offset -> offset
       ).as(
-        Dinner.simple *
+        Dinner.parser *
       )
+    }
+  }
 
-      val totalRows = SQL(
+  def findUpcoming(): Seq[Dinner] = {
+    DB.withConnection { implicit connection =>
+      SQL(
         """
-          SELECT COUNT(*) FROM Dinner
-          WHERE EventDate > {now}
+          SELECT * FROM dinners
+          WHERE event_date > {now}
+          ORDER BY event_date
         """
       ).on(
-        'now -> now
-      ).as(scalar[Long].single)
-
-      Page(dinners, page, offset, totalRows)
+        'now -> new Date()
+      ).as(
+        Dinner.parser *
+      )
     }
   }
 
-  def findById(id: Long) = {
+  def findById(id: Long): Option[Dinner] = {
     DB.withConnection { implicit connection =>
-      SQL("SELECT * FROM Dinner WHERE DinnerId={id}").on('id -> id).as(Dinner.simple.singleOpt)
+      SQL(
+        """
+          SELECT * FROM dinners
+          WHERE id = {id}
+        """
+      ).on(
+        'id -> id
+      ).as(
+        Dinner.parser.singleOpt
+      )
     }
   }
 
-  def add(dinner: Dinner): Dinner = {
-    DB.withTransaction { implicit connection =>
-      val id: Option[Long] = SQL("""INSERT INTO Dinner(Title, EventDate, Description, HostedBy, ContactPhone, Address, Country, Latitude, Longitude)
-                 VALUES({title}, {eventDate}, {description}, {hostedBy}, {contactPhone}, {address}, {country}, {latitude}, {longitude})
-          """
+  //
+  // Insert/Delete Methods
+
+  def create(dinner: Dinner): Dinner = {
+    DB.withConnection { implicit connection =>
+      val id: Option[Long] = SQL(
+        """
+          INSERT INTO dinners(title, event_date, description, hosted_by, contact_phone, address, country, latitude, longitude)
+          VALUES({title}, {eventDate}, {description}, {hostedBy}, {contactPhone}, {address}, {country}, {latitude}, {longitude})
+        """
       ).on(
         'title -> dinner.title,
         'eventDate -> dinner.eventDate,
@@ -97,40 +140,43 @@ object Dinner {
         'longitude -> dinner.longitude
       ).executeInsert()
 
-      SQL(
-        """
-          INSERT INTO Rsvp(DinnerId, AttendeeName) VALUES({dinnerId}, {attendeeName})
-        """
-      ).on(
-        'dinnerId -> id.get,
-        'attendeeName -> dinner.hostedBy
-      ).executeUpdate()
-
       dinner.copy(id = Id(id.get))
     }
   }
 
   def delete(dinner: Dinner) {
-    delete(dinner.id.get)
-  }
+    DB.withTransaction { implicit connection =>
+      SQL(
+        """
+          DELETE FROM rsvps
+          WHERE dinner_id = {id}
+        """
+      ).on(
+        'id -> dinner.id.get
+      ).executeUpdate()
 
-  def delete(id: Long) {
-    DB.withConnection { implicit connection =>
-      SQL("DELETE FROM Dinner WHERE DinnerId = {id}").on('id -> id).executeUpdate()
+      SQL(
+        """
+          DELETE FROM dinners
+          WHERE id = {id}
+        """
+      ).on(
+        'id -> dinner.id.get
+      ).executeUpdate()
     }
   }
 
-  def update(id: Long, dinner: Dinner) {
+  def update(dinner: Dinner) {
     DB.withConnection { implicit connection =>
       SQL(
         """
-          UPDATE Dinner
-          SET Title = {title}, EventDate = {eventDate}, Description = {description}, HostedBy = {hostedBy}, ContactPhone = {contactPhone},
-              Address = {address}, Country = {country}, Latitude = {latitude}, Longitude = {longitude}
-          WHERE DinnerId = {id}
+          UPDATE dinners
+          SET title = {title}, event_date = {eventDate}, description = {description}, hosted_by = {hostedBy},
+              contact_phone = {contactPhone}, address = {address}, country = {country}, latitude = {latitude}, longitude = {longitude}
+          WHERE id = {id}
         """
       ).on(
-        'id -> id,
+        'id -> dinner.id.get,
         'title -> dinner.title,
         'eventDate -> dinner.eventDate,
         'description -> dinner.description,
@@ -141,48 +187,6 @@ object Dinner {
         'latitude -> dinner.latitude,
         'longitude -> dinner.longitude
       ).executeUpdate()
-    }
-  }
-
-  def addUser(dinnerId: Long, username: String) {
-    DB.withConnection { implicit connection =>
-      SQL("INSERT INTO Rsvp(DinnerId, AttendeeName) VALUES({dinnerId}, {username})").on(
-        'dinnerId -> dinnerId,
-        'username -> username
-      ).executeUpdate()
-    }
-  }
-
-  def isHostedBy(dinnerId: Long, username: String): Boolean = {
-    DB.withConnection { implicit connection =>
-      SQL(
-        """
-          SELECT COUNT(dinner.hostedBy) = 1 from Dinner dinner
-          WHERE dinner.DinnerId = {dinnerId} and dinner.hostedBy = {username}
-        """
-      ).on(
-        'dinnerId -> dinnerId,
-        'username -> username
-      ).as(
-        scalar[Boolean].single
-      )
-    }
-  }
-
-  def isUserRegistered(dinnerId: Long, username: String): Boolean = {
-    DB.withConnection { implicit connection =>
-      SQL(
-        """
-          SELECT COUNT(rsvp.AttendeeName) = 1 from Rsvp rsvp
-          JOIN Dinner dinner ON dinner.DinnerId = rsvp.DinnerId
-          WHERE dinner.DinnerId = {dinnerId} and rsvp.AttendeeName = {username}
-        """
-      ).on(
-        'dinnerId -> dinnerId,
-        'username -> username
-      ).as(
-        scalar[Boolean].single
-      )
     }
   }
 }

@@ -1,35 +1,26 @@
-# --- First database schema
-
 # --- !Ups
 
-CREATE TABLE Users (
-  UserId                    SERIAL PRIMARY KEY,
-  Username                  VARCHAR(128) NOT NULL UNIQUE,
-  Email                     VARCHAR(255) NOT NULL UNIQUE,
-  Password                  VARCHAR(64) NOT NULL
+CREATE TABLE dinners (
+  id                        SERIAL PRIMARY KEY,
+  title                     VARCHAR(50) NOT NULL,
+  event_date                TIMESTAMP NOT NULL,
+  description               VARCHAR(255) NOT NULL,
+  hosted_by                 VARCHAR(20) NOT NULL,
+  contact_phone             VARCHAR(20) NOT NULL,
+  address                   VARCHAR(50) NOT NULL,
+  country                   VARCHAR(30) NOT NULL,
+  latitude                  FLOAT NOT NULL,
+  longitude                 FLOAT NOT NULL
 );
 
-CREATE TABLE Dinner (
-  DinnerId                  SERIAL PRIMARY KEY,
-  Title                     VARCHAR(50) NOT NULL,
-  EventDate                 DATETIME NOT NULL,
-  Description               VARCHAR(255) NOT NULL,
-  HostedBy                  VARCHAR(20) NOT NULL,
-  ContactPhone              VARCHAR(20) NOT NULL,
-  Address                   VARCHAR(50) NOT NULL,
-  Country                   VARCHAR(30) NOT NULL,
-  Latitude                  FLOAT NOT NULL,
-  Longitude                 FLOAT NOT NULL
+CREATE TABLE rsvps (
+  id                        SERIAL PRIMARY KEY,
+  dinner_id                 INT NOT NULL,
+  attendee_name             VARCHAR(30) NOT NULL,
+  FOREIGN KEY (dinner_id) REFERENCES dinners(id)
 );
 
-CREATE TABLE Rsvp (
-  RsvpId                    SERIAL PRIMARY KEY,
-  DinnerId                  INT NOT NULL,
-  AttendeeName              VARCHAR(30) NOT NULL,
-  FOREIGN KEY (DinnerId) REFERENCES Dinner(DinnerId)
-);
-
-INSERT INTO Dinner(Title, EventDate, Description, HostedBy, ContactPhone, Address, Country, Latitude, Longitude) values
+INSERT INTO dinners(title, event_date, description, hosted_by, contact_phone, address, country, latitude, longitude) values
 ('.NET Futures','2013-12-06 17:00:00','Come talk about cool things coming with .NET','scottgu','425-555-1212','One Microsoft Way, Redmond WA','USA',4.764312000000000e+001,-1.221306090000000e+002),
 ('Geek Out','2013-12-06 12:00:00','All things geek allowed','scottha','425-555-1212','One Microsoft Way, Redmond WA','USA',4.764312000000000e+001,-1.221306090000000e+002),
 ('Fine Wine','2013-12-07 12:00:00','Sample some fine Washington Wine','philha','425-555-1212','One Microsoft Way, Redmond WA','USA',4.763254600000000e+001,-1.222120100000000e+002),
@@ -40,6 +31,5 @@ INSERT INTO Dinner(Title, EventDate, Description, HostedBy, ContactPhone, Addres
 
 # --- !Downs
 
-DROP TABLE IF EXISTS Users;
-DROP TABLE IF EXISTS Dinner;
-DROP TABLE IF EXISTS Rsvp;
+DROP TABLE IF EXISTS rsvps;
+DROP TABLE IF EXISTS dinners;

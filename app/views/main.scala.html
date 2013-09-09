@@ -1,4 +1,4 @@
-@(title: String)(content: Html)(implicit user: Option[User])
+@(title: String)(content: Html)
 
 <!DOCTYPE html>
 
@@ -8,7 +8,6 @@
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/Site.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
-        <script type="text/javascript" src="@routes.Home.javascriptRoutes()"></script>
     </head>
     <body>
         <div class="page">
@@ -19,15 +18,13 @@
                 </div>
 
                 <div id="logindisplay">
-                @Shared.logon()
+                    @Shared.logon()
                 </div>
 
                 <div id="menucontainer">
 
                     <ul id="menu">
-                        <li><a href="@routes.Dinners.index()">Find Dinner</a></li>
-                        <li><a href="@routes.Dinners.create()">Host Dinner</a></li>
-                        <li><a href="@routes.Home.about()">About</a></li>
+                        <li><a href="#">About</a></li>
                     </ul>
 
                 </div>

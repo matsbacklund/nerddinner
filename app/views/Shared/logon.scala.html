@@ -1,7 +1,3 @@
-@()(implicit user: Option[User])
+@()
 
-@user.map { user =>
-    <text>Welcome <b>@user.username</b>! [ <a href="@routes.Account.logoff()">Log Off</a> ]</text>
-}.getOrElse {
-    [ <a href="@routes.Account.logon()">Log On</a> ]
-}
+[ <a href="#">Log On</a> ]

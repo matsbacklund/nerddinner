@@ -3,31 +3,10 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Home.index
-GET     /about                      controllers.Home.about
+GET        /                    controllers.Application.index
 
-# Account page
-GET     /Account/logon              controllers.Account.logon
-POST    /Account/logon              controllers.Account.authenticate
-GET     /Account/logoff             controllers.Account.logoff
-GET     /Account/register           controllers.Account.registration
-POST    /Account/register           controllers.Account.register
-
-# Dinners
-GET     /Dinners                    controllers.Dinners.index
-GET     /Dinners/index              controllers.Dinners.index
-GET     /Dinners/page/:page         controllers.Dinners.page(page: Int)
-GET     /Dinners/details/:id        controllers.Dinners.details(id: Long)
-GET     /Dinners/edit/:id           controllers.Dinners.edit(id: Long)
-POST    /Dinners/update/:id         controllers.Dinners.update(id: Long)
-GET     /Dinners/create             controllers.Dinners.create
-POST    /Dinners/insert             controllers.Dinners.insert
-GET     /Dinners/delete/:id         controllers.Dinners.delete(id: Long)
-POST    /Dinners/remove/:id         controllers.Dinners.remove(id: Long)
-POST    /Dinners/rsvp/:id           controllers.Rsvps.register(id: Long)
-
-# Javascript routing
-GET     /assets/javascripts/routes  controllers.Home.javascriptRoutes
+GET        /dinners             controllers.Dinners.list
+GET        /dinners/:id         controllers.Dinners.details(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET        /assets/*file        controllers.Assets.at(path="/public", file)

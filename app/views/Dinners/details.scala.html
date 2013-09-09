@@ -1,4 +1,4 @@
-@(id: Long, dinner: Dinner)(implicit user: Option[User] = None)
+@(dinner: Dinner)
 @import java.text.DateFormat
 
 @dateFormat(date: java.util.Date) = @{
@@ -11,67 +11,37 @@
     df.format(date)
 }
 
+@at() = @{
+    Html("@")
+}
+
 @main("Dinner: " + dinner.title) {
 
-    <div id="dinnerDiv">
-        <h2>@dinner.title</h2>
+    <h2>@dinner.title</h2>
+    <p>
+        <strong>When:</strong>
+        @dateFormat(dinner.eventDate)
 
-        <p>
-            <strong>When:</strong>
-            @dateFormat(dinner.eventDate)
+        <strong>@at()</strong>
+        @timeFormat(dinner.eventDate)
+    </p>
+    <p>
+        <strong>Where:</strong>
+        @dinner.address,
+        @dinner.country
+    </p>
+    <p>
+        <strong>Description:</strong>
+        @dinner.description
+    </p>
+    <p>
+        <strong>Origanizer:</strong>
+        @dinner.hostedBy
+        (@dinner.contactPhone)
+    </p>
 
-            <strong>@@</strong>
-            @timeFormat(dinner.eventDate)
-        </p>
-        <p>
-            <strong>Where:</strong>
-            @dinner.address,
-            @dinner.country
-        </p>
-        <p>
-            <strong>Description:</strong>
-            @dinner.description
-        </p>
-        <p>
-            <strong>Origanizer:</strong>
-            @dinner.hostedBy
-            (@dinner.contactPhone)
-        </p>
-
-        <div id="rsvpmsg">
-            @user.map { user =>
-                @if(Dinner.isHostedBy(id, user.username)) {
-                    <p>
-                        <a href="@routes.Dinners.edit(id)">Edit Dinner</a> |
-                        <a href="@routes.Dinners.delete(id)">Delete Dinner</a>
-                    </p>
-                } else {
-                    @if(Dinner.isUserRegistered(id, user.username)) {
-                        <p>You are registered for this event!</p>
-                    } else {
-                        <a href="#" id="rsvplink">RSVP for this event</a>
-                    }
-                }
-            }.getOrElse {
-                <a href="@routes.Account.logon()">Logon</a> to RSVP for this event.
-            }
-        </div>
-    </div>
-
-    <div id="mapDiv">
-        @views.html.Dinners.map(dinner)
-    </div>
-
-    <script type="text/javascript">
-        $(function() {
-            $('a#rsvplink').click(function(e) {
-                e.preventDefault();
-                jsRoutes.controllers.Rsvps.register(@id).ajax({
-                    success: function(data) {
-                        $('div#rsvpmsg').html(data).animate({fontSize: "1.5em"},400);
-                    }
-                });
-            });
-        });
-    </script>
+    <p>
+        <a href="#">Edit Dinner</a> |
+        <a href="">Delete Dinner</a>
+    </p>
 }
